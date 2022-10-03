@@ -1,7 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,java,maven,vuejs
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,java,maven,vuejs
 
-!frontend/
+!frontend/*
 
 ### Java ###
 # Compiled class file
