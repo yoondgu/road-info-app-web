@@ -13,7 +13,7 @@ public class RestAPIController {
 	@Autowired
 	RoadService roadService;
 	
-	@GetMapping(path = "/api/*")
+	@GetMapping(path = "/api/road")
 	public ResponseData road() {
 		return roadService.getRoadInfo(0.05);
 	}
