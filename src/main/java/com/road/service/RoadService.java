@@ -19,6 +19,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+
 import com.road.response.ListResponseData;
 import com.road.response.ResponseData;
 import com.road.util.CSVUtil;
@@ -53,6 +54,7 @@ public class RoadService {
 			}
 			System.out.println("설정한 요청좌표 최대 지원개수: " + maxCount);
 			
+			// TODO OkHttpClient 객체 재사용하도록 수정, response.close() finally에 넣을 수 있도록 하기
 			// SK open API에 http 요청 보내기 : 특정 좌표 리스트에 매칭되는 도로 정보 리스트 요청
 			// OkHttpClient 객체 생성
 			OkHttpClient client = new OkHttpClient();
@@ -67,9 +69,14 @@ public class RoadService {
 					.build();
 			Response response = client.newCall(request).execute();
 			
+			String responseBodyString = response.body().string();
+			String message = response.message();
+			int errorCode = response.code();
+			response.close(); // http 통신 스트림 닫기 (메모리 누수 방지)
+			
 			if (response.code() == 200) {
 				// 정상적으로 응답받았을 경우, 응답객체의 내용을 JsonObject, JsonArray 객체로 변환하여 필요한 정보 획득하기
-				JsonElement element = JsonParser.parseString(response.body().string());
+				JsonElement element = JsonParser.parseString(responseBodyString);
 				JsonObject rootob = element.getAsJsonObject().get("resultData").getAsJsonObject();
 				Object matchedPointsObj = rootob.get("matchedPoints");
 				if (matchedPointsObj == null) {
@@ -82,7 +89,7 @@ public class RoadService {
 				
 				return ListResponseData.create(result);
 			} else {
-				return ResponseData.create(false, "SK open API 응답 오류: " + response.message(), response.code());
+				return ResponseData.create(false, "SK open API 응답 오류: " + message, errorCode);
 			}
 			
 		} catch (Exception e) {
