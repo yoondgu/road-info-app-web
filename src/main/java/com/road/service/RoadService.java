@@ -28,6 +28,8 @@ import com.road.vo.Coord;
 
 @Service
 public class RoadService {
+    
+    private static OkHttpClient client = new OkHttpClient();
 
 	/**
 	 * skopenapi에서 제공하는 원도로등급 인덱스 별 명칭
@@ -57,7 +59,6 @@ public class RoadService {
 			// TODO OkHttpClient 객체 재사용하도록 수정, response.close() finally에 넣을 수 있도록 하기
 			// SK open API에 http 요청 보내기 : 특정 좌표 리스트에 매칭되는 도로 정보 리스트 요청
 			// OkHttpClient 객체 생성
-			OkHttpClient client = new OkHttpClient();
 			MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 			RequestBody body = RequestBody.create("responseType=1&coords=" + coordsToString(requestCoords), mediaType);
 			Request request = new Request.Builder()
